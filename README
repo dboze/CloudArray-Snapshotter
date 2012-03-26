@@ -8,7 +8,8 @@ Requirements:
 Use:
   - Rename config.yml.example to config.yml
   - add the IP or DNS name of your CloudArray appliance under 'cloudarray'
-  - set the 'when' attribute to 'flush' or 'now' (refer to CloudArraySnapshotAPIGuide for more information)
+  - set the 'when' attribute to 'flush' or 'now' 
+    (refer to CloudArraySnapshotAPIGuide for more information)
   - set your username and password
   - list any volumes you do not want snapshotted under 'exclusions'
   - run the script
