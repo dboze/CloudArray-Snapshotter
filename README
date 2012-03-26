@@ -1,1 +1,19 @@
 TwinStrata CloudArray snapshot script
+
+Requirements: 
+  yaml, net/http, cgi, nokogiri, logger
+  CloudArray v3.3.0 or higher
+  Tested on Ruby 1.8.7
+
+Use:
+  - Rename config.yml.example to config.yml
+  - add the IP or DNS name of your CloudArray appliance under 'cloudarray'
+  - set the 'when' attribute to 'flush' or 'now' (refer to CloudArraySnapshotAPIGuide for more information)
+  - set your username and password
+  - list any volumes you do not want snapshotted under 'exclusions'
+  - run the script
+  - make sure everything is working in snapshot.log
+  - add to crontab at desired interval
+  
+Notes:
+The CloudArray appliance does not return an HTTP response until an action has been completed. Therefore, if the wait=flush option is used and the cache of a volume is not cleared, the script will wait for an HTTP timeout and report that the volume is in a flushing state. The snapshot will be created as soon as the cache is flushed.
