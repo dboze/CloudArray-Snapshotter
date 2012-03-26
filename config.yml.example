@@ -1,0 +1,9 @@
+setup:
+  cloudarray: 192.168.1.101
+  when: flush
+credentials:
+  username: bob
+  password: 123abc
+exclusions:
+  - Not So Important Volume
+  - Dont Back Me Up Volume
