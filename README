@@ -15,6 +15,6 @@ Use:
   - run the script
   - make sure everything is working in snapshot.log
   - add to crontab at desired interval
-  
-Notes:
+
+Note:
 The CloudArray appliance does not return an HTTP response until an action has been completed. Therefore, if the wait=flush option is used and the cache of a volume is not cleared, the script will wait for an HTTP timeout and report that the volume is in a flushing state. The snapshot will be created as soon as the cache is flushed.
