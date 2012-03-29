@@ -1,0 +1,18 @@
+GEM
+  remote: http://rubygems.org/
+  specs:
+    crack (0.3.1)
+    httparty (0.8.1)
+      multi_json
+      multi_xml
+    logger (1.2.8)
+    multi_json (1.2.0)
+    multi_xml (0.4.2)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  crack
+  httparty
+  logger
