@@ -2,34 +2,41 @@
 
 require 'rubygems'
 require 'yaml'
-require 'net/http'
-require 'cgi'
-require 'nokogiri'
+require 'httparty'
 require 'logger'
+require 'crack'
 
 config_file = File.join(File.dirname(__FILE__), "config.yml")
-config = YAML.load(File.read(config_file))
-username = config['credentials']['username']
-password = config['credentials']['password']
+CONFIG = YAML.load(File.read(config_file))
+USERNAME = CONFIG['credentials']['username']
+PASSWORD = CONFIG['credentials']['password']
 log = Logger.new('snapshot.log')
 
-def http_get(domain,path,params)
-  return Net::HTTP.get(domain, "#{path}?".concat(params.collect { |k,v| "#{k}=#{CGI::escape(v.to_s)}" }.join('&'))) if not params.nil?
-  return Net::HTTP.get(domain, path)
-  rescue Timeout::Error => e
-    return "Volume will snapshot once flush completes."
+class CloudArray
+  include HTTParty
+  base_uri CONFIG['setup']['cloudarray']
+  format :xml
+  
+  def self.volumes
+    Crack::XML.parse(CloudArray.get("/rest/list_volumes", 
+      :query => {:username => USERNAME, :password => PASSWORD}).body)
+    rescue Timeout::Error => e
+      return "Server timeout."
+  end
+  
+  def self.take_snaps(volume)
+    CloudArray.get("/rest/new_snapshot", 
+      :query => {:when => CONFIG['setup']['when'], :volume => volume, :username => USERNAME, :password => PASSWORD}).body
+    rescue Timeout::Error => e
+      return "Volume will snapshot once flush completes."
+  end
 end
 
-auth_params = {:username => username, :password => password}
-volumes = http_get(config['setup']['cloudarray'], "/rest/list_volumes", auth_params)
-
-volumes = Nokogiri::XML(volumes)
-volumes.xpath('/result/volumes/volume/name').each do |vol|
-  unless config['exclusions'].include? vol.content
-    snap_params = {:when => config['setup']['when'], :volume => vol.content, :username => username, :password => password}
-    log.debug "Snapshotting " + vol.content + "..."
-    log.debug http_get(config['setup']['cloudarray'], "/rest/new_snapshot", snap_params).gsub(/<\/?[^>]*>/, "")
+CloudArray.volumes['result']['volumes']['volume'].each do |volume|
+  unless CONFIG['exclusions'].include? volume['name']
+    log.debug "Snapshotting " + volume['name'] + "..."
+    log.debug CloudArray.take_snaps(volume['name']).gsub(/<\/?[^>]*>/, "")
   else
-    log.debug "Excluding volume: " + vol.content
+    log.debug "Excluding volume: " + volume['name']
   end
 end
