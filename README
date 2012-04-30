@@ -7,7 +7,7 @@ Requirements:
 
 Use:
   - `gem install bundler`
-  - `bundler install`
+  - `bundle install`
   - Rename config.yml.example to config.yml
   - add the IP or DNS name of your CloudArray appliance under 'cloudarray'
   - set the 'when' attribute to 'flush' or 'now' 
